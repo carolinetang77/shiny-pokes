@@ -2,6 +2,13 @@ library(shiny)
 library(tidyverse)
 library(ggplot2)
 
+mgr_mods <- list.files(
+  path = 'modules/', 
+  full.names = TRUE
+)
+
+sapply(mgr_mods, FUN = source)
+
 # load data
 pokedata <- read.csv('data/pokemon.csv')
 
@@ -10,20 +17,12 @@ ui <- fluidPage(
   # title of app
   headerPanel(title = 'Pokemon Visualizer'),
   
-  # sidebar layout
-  sidebarLayout(
-    # sidebar (filters)
-    sidebarPanel(
-      selectizeInput(
-        inputId = 'pokename',
-        label = 'Pokemon Name',
-        choices = NULL,
-        multiple = FALSE
-      )
-    ),
-    # plots
-    mainPanel(
-      plotOutput(outputId = 'statplot')
+  # tabs
+  tabsetPanel(id = 'pokemon_tabs',
+    tabPanel(
+      title = 'Pokemon Summary',
+      value = 'pokemon_summary',
+      uiOutput('summary')
     )
   )
   
@@ -31,36 +30,10 @@ ui <- fluidPage(
 
 # server function
 server <- function(input, output, session) {
-  
-  # server-side update of selectize
-  updateSelectizeInput(
-    session,
-    inputId = 'pokename',
-    choices = pokedata$NAME,
-    selected = pokedata$NAME[1],
-    options = list(maxOptions = 2000),
-    server = TRUE)
-  
-  #plot output
-  output$statplot <- renderPlot({
-    # filter for selected pokemon
-    pokedata |> 
-      filter(NAME == input$pokename) |> 
-      select(HP, ATK, DEF, SP_ATK, SP_DEF, SPD) |> 
-      pivot_longer(
-        cols = c(HP, ATK, DEF, SP_ATK, SP_DEF, SPD), 
-        names_to = 'Stat', 
-        values_to = 'Value'
-      ) |> 
-      # plot
-      ggplot(aes(y = Stat, x = Value, fill = Value)) +
-        geom_bar(stat = 'identity') +
-        labs(title = paste(input$pokename, 'stats')) +
-        scale_fill_viridis_c(
-          limits = c(1, 255), 
-          values = scales::rescale(c(1, 60, 100, 255))
-        )
+  output$summary <- renderUI({
+    summary_ui('summary')
   })
+  summary_server('summary', pokedata)
 }
 
 shinyApp(ui, server)
