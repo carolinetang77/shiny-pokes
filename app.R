@@ -38,10 +38,12 @@ server <- function(input, output, session) {
     inputId = 'pokename',
     choices = pokedata$NAME,
     selected = pokedata$NAME[1],
+    options = list(maxOptions = 2000),
     server = TRUE)
   
   #plot output
   output$statplot <- renderPlot({
+    # filter for selected pokemon
     pokedata |> 
       filter(NAME == input$pokename) |> 
       select(HP, ATK, DEF, SP_ATK, SP_DEF, SPD) |> 
@@ -50,9 +52,14 @@ server <- function(input, output, session) {
         names_to = 'Stat', 
         values_to = 'Value'
       ) |> 
-      ggplot(aes(x = Stat, y = Value)) +
+      # plot
+      ggplot(aes(y = Stat, x = Value, fill = Value)) +
         geom_bar(stat = 'identity') +
-        labs(title = paste(input$pokename, 'stats'))
+        labs(title = paste(input$pokename, 'stats')) +
+        scale_fill_viridis_c(
+          limits = c(1, 255), 
+          values = scales::rescale(c(1, 60, 100, 255))
+        )
   })
 }
 
