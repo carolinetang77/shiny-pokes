@@ -2,6 +2,7 @@ library(shiny)
 library(httr)
 library(dplyr)
 library(tidyr)
+library(stringr)
 library(ggplot2)
 library(cowplot)
 

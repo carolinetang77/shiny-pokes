@@ -42,6 +42,7 @@ summary_server <- function(id, poke_url) {
       FUN = function(x) x$name
     ) |> 
       unlist()
+    names(pokemon_names) <- str_to_title(pokemon_names)
     # server-side update of selectize
     updateSelectizeInput(
       session,
@@ -101,10 +102,10 @@ summary_server <- function(id, poke_url) {
         reg_abilities <- form$abilities[form$abilities$hidden == FALSE,]
         hidden_abilities <- form$abilities[form$abilities$hidden == TRUE,]
         summary_text <- paste0(summary_text,
-          'Name: ', form$name, '\n',
-          'Type: ', form$types$name[1], '/', form$types$name[2], '\n',
-          'Ability: ', reg_abilities$name[1], '/', reg_abilities$name[2], '\n',
-          'Hidden Ability: ', hidden_abilities$name[1], '\n',
+          'Name: ', str_to_title(form$name), '\n',
+          'Type: ', str_to_title(form$types$name[1]), '/', str_to_title(form$types$name[2]), '\n',
+          'Ability: ', str_to_title(reg_abilities$name[1]), '/', str_to_title(reg_abilities$name[2]), '\n',
+          'Hidden Ability: ', str_to_title(hidden_abilities$name[1]), '\n',
           'Height (m): ', form$height/10, '\n',
           'Weight (kg): ', form$weight/10, '\n\n'
         )
@@ -133,7 +134,7 @@ summary_server <- function(id, poke_url) {
             labs(
               x = 'Stat Value',
               y = NULL,
-              title = paste(x$name, 'base stats')
+              title = paste(str_to_title(x$name), 'base stats')
             ) +
             scale_y_discrete(
               labels = stat_names
