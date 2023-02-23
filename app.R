@@ -1,6 +1,9 @@
 library(shiny)
-library(tidyverse)
+library(httr)
+library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(cowplot)
 
 mgr_mods <- list.files(
   path = 'modules/', 
@@ -9,8 +12,8 @@ mgr_mods <- list.files(
 
 sapply(mgr_mods, FUN = source)
 
-# load data
-pokedata <- read.csv('data/pokemon.csv')
+# pokeAPI (v2) url
+poke_url <- 'https://pokeapi.co/api/v2/'
 
 # ui function
 ui <- fluidPage(
@@ -33,7 +36,7 @@ server <- function(input, output, session) {
   output$summary <- renderUI({
     summary_ui('summary')
   })
-  summary_server('summary', pokedata)
+  summary_server('summary', poke_url)
 }
 
 shinyApp(ui, server)
