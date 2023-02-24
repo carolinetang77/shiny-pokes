@@ -4,5 +4,5 @@ A shiny app for Pokemon summaries, created using data from [PokeAPI](https://pok
 
 ## Tabs
 - Summary: Basic information about each Pokemon (types, abilities, height, weight, color)
-- Can I fight it?: Determine whether a Pokemon can be effective at fighting another based on available moves
+- Can I fight it?: Determine whether a Pokemon can be effective at fighting another based on available moves (WIP)
 
