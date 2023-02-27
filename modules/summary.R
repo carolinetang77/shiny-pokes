@@ -55,9 +55,9 @@ summary_server <- function(id, poke_url) {
     # get one pokemon (all forms)
     onepoke <- reactive({
       r <- GET(paste0(poke_url, 'pokemon-species/', input$pokename))
-      one_species <- content(r)$varieties
+      one_species <- content(r)
       varieties <- lapply(
-        one_species,
+        one_species$varieties,
         function(x) {
           r <- GET(x$pokemon$url)
           form <- content(r, 'parsed')[c(
@@ -90,10 +90,12 @@ summary_server <- function(id, poke_url) {
           ) |> 
             bind_rows()
           
+          form$color <- one_species$color$name
+          
           return(form)
         }
       )
-    })
+    }) |> bindCache(input$pokename)
     
     # text output
     output$summary_info <- renderText({
@@ -107,7 +109,8 @@ summary_server <- function(id, poke_url) {
           'Ability: ', str_to_title(reg_abilities$name[1]), '/', str_to_title(reg_abilities$name[2]), '\n',
           'Hidden Ability: ', str_to_title(hidden_abilities$name[1]), '\n',
           'Height (m): ', form$height/10, '\n',
-          'Weight (kg): ', form$weight/10, '\n\n'
+          'Weight (kg): ', form$weight/10, '\n',
+          'Colour: ', str_to_title(form$color), '\n\n'
         )
       }
       summary_text
